@@ -86,6 +86,17 @@ void ffFontInitQt(FFfont* font, const char* data) {
     }
     data++;
 
+    // Qt serializes pointSize and pixelSize separately, using -1 when unset.
+    if (ffStrbufEqualS(&font->size, "-1")) {
+        ffStrbufClear(&font->size);
+        ffStrbufAppendSUntilC(&font->size, data, ',');
+        if (ffStrbufEqualS(&font->size, "-1")) {
+            ffStrbufClear(&font->size);
+        } else if (font->size.length > 0) {
+            ffStrbufAppendS(&font->size, "px");
+        }
+    }
+
     // Style
     data = strrchr(data, ',');
     if (!data) {

@@ -27,7 +27,7 @@ void ffDurationAppendNum(uint64_t totalSeconds, FFstrbuf* result) {
     totalSeconds /= 60;
     uint32_t hours = (uint32_t) (totalSeconds % 24);
     totalSeconds /= 24;
-    uint32_t days = (uint32_t) totalSeconds;
+    uint64_t days = totalSeconds;
 
     if (days > 0) {
         ffStrbufAppendUInt(result, days);

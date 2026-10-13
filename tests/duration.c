@@ -16,6 +16,7 @@ static void verify(uint64_t totalSeconds, const char* expected, int lineNo) {
 #define VERIFY(color, expected) verify((color), (expected), __LINE__)
 
 int main(void) {
+    VERIFY(UINT64_C(4294967296) * 86400, "4294967296 days(!)");
     // Test seconds less than 60
     VERIFY(0, "0 seconds");
     VERIFY(1, "1 second");

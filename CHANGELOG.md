@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed trailing ANSI reset sequences being lost or counted as padding characters. (Global)
 * Fixed substring ends before the start of a value returning the entire suffix. (Global)
 * Fixed percentage bars overflowing or aborting for values outside 0 to 100. (Global)
 * Fixed NaN and infinity being truncated or padded as decimal fractions. (Global)

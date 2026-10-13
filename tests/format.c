@@ -19,6 +19,8 @@ static void verify(const char* format, const char* arg, const char* expected, in
 
 int main(void) {
     instance.config.display.pipe = true;
+    VERIFY("{1:3}", "abcdef\e[m", "abc\e[m");
+    VERIFY("{1>5}", "abc\e[m", "  abc\e[m");
     VERIFY("{1~0,-100}", "hello", "");
     VERIFY("{1~1,-100}", "hello", "");
 

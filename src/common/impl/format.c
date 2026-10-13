@@ -490,12 +490,10 @@ static bool skipAnsiEscape(FFstrbuf* in, FFstrbuf* out, FFstrbuf* trailingEscape
         prefixLen += len;
     }
 
-    if (prefixLen == 0) {
-        return false;
+    if (prefixLen > 0) {
+        ffStrbufAppendNS(out, prefixLen, in->chars);
+        ffStrbufSubstrAfter(in, prefixLen - 1);
     }
-
-    ffStrbufAppendNS(out, prefixLen, in->chars);
-    ffStrbufSubstrAfter(in, prefixLen - 1);
 
     if (trailingEscape) {
         // likely have one or more `CSI m` resets at the end of the string

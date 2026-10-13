@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdnoreturn.h>
 
@@ -31,6 +32,17 @@ static int checkedByte(int value) {
 }
 
 int main(void) {
+    {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreate();
+        for (int8_t precision = 0; precision <= 5; ++precision) {
+            ffStrbufClear(&strbuf);
+            ffStrbufAppendDouble(&strbuf, INFINITY, precision, true);
+            VERIFY(ffStrbufEqualS(&strbuf, "Infinity"));
+            ffStrbufClear(&strbuf);
+            ffStrbufAppendDouble(&strbuf, NAN, precision, true);
+            VERIFY(ffStrbufEqualS(&strbuf, "NaN"));
+        }
+    }
     {
         FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreateS("abcdef");
         ffStrbufPrependNS(&strbuf, 2, strbuf.chars + 2);

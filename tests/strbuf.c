@@ -26,6 +26,11 @@ int shouldNotBeCalled(int c) {
 const FFstrbuf testCreateStatic = FF_STRBUF_STATIC("TEST");
 
 int main(void) {
+    {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreateS("abc");
+        ffStrbufRemoveS(&strbuf, "");
+        VERIFY(ffStrbufEqualS(&strbuf, "abc"));
+    }
     FFstrbuf strbuf;
 
     // destroy 0

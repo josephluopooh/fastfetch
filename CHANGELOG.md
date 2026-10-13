@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed an infinite loop when removing an empty substring. (Global)
 * Fixed invalid UTF-8 encodings being counted as complete characters when calculating display widths. (Logo / Separator)
 * Fixed `--config`/`-c` bash completion offering one candidate per word instead of one candidate per file for paths containing spaces. (Completion, Bash)
 * Fixed external monitors detected via DDC/CI being randomly reported as built-in, and libddcutil trace messages occasionally leaking into the output and breaking `--format json`. (#2615, Brightness / Linux)

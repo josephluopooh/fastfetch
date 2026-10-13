@@ -384,6 +384,9 @@ bool ffStrbufRemoveSubstr(FFstrbuf* strbuf, uint32_t startIndex, uint32_t endInd
 
 void ffStrbufRemoveS(FFstrbuf* strbuf, const char* str) {
     uint32_t stringLength = (uint32_t) strlen(str);
+    if (stringLength == 0) {
+        return;
+    }
 
     for (uint32_t i = ffStrbufNextIndexS(strbuf, 0, str); i < strbuf->length; i = ffStrbufNextIndexS(strbuf, i, str)) {
         ffStrbufRemoveSubstr(strbuf, i, i + stringLength);

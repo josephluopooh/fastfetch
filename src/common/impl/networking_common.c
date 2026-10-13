@@ -128,7 +128,7 @@ bool ffNetworkingDecompressGzip(FFstrbuf* buffer, char* headerEnd) {
     int result = zlibData.ffinflate(&zs, Z_FINISH);
 
     // If output buffer is insufficient, try to extend buffer
-    while (result == Z_BUF_ERROR || (result != Z_STREAM_END && zs.avail_out == 0)) {
+    while ((result == Z_OK || result == Z_BUF_ERROR) && zs.avail_out == 0 && zs.avail_in > 0) {
         FF_DEBUG("Output buffer insufficient, trying to extend");
 
         // Save already decompressed data amount

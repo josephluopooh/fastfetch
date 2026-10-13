@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 static void verify(bool expression, const char* expressionStr, int lineNo) {
     if (expression) {
@@ -20,6 +23,17 @@ static FFNetworkingTransferEncoding parse(const char* value) {
 }
 
 int main(void) {
+#if defined(FF_HAVE_ZLIB) && !defined(_WIN32)
+    {
+        VERIFY(ffNetworkingLoadZlibLibrary() == nullptr);
+        FF_STRBUF_AUTO_DESTROY response = ffStrbufCreateS("HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\n\r\n");
+        uint32_t offset = response.length - 4;
+        ffStrbufAppendNS(&response, 9, "\x1f\x8b\x08\0\0\0\0\0\0");
+        alarm(2);
+        VERIFY(!ffNetworkingDecompressGzip(&response, response.chars + offset));
+        alarm(0);
+    }
+#endif
     {
         VERIFY(parse("chunked") == FF_NETWORKING_TE_CHUNKED);
         VERIFY(parse("Chunked") == FF_NETWORKING_TE_CHUNKED);

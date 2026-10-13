@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed an infinite retry loop when a gzip response ends before the stream is complete. (Networking)
 * Fixed integer overflow in format argument indices, constants, widths, and substring bounds. (Global)
 * Fixed trailing ANSI reset sequences being lost or counted as padding characters. (Global)
 * Fixed substring ends before the start of a value returning the entire suffix. (Global)

@@ -83,7 +83,7 @@ void ffPercentAppendBar(FFstrbuf* buffer, double percent, FFPercentageModuleConf
 
         FFPercentageTypeFlags percentType = config.type == 0 ? options->percentType : config.type;
 
-        uint8_t blocksPercent = (uint8_t) (percent / 100.0 * options->barWidth + 0.5);
+        uint8_t blocksPercent = percent >= 100 ? options->barWidth : !(percent > 0) ? 0 : (uint8_t) (percent / 100.0 * options->barWidth + 0.5);
         assert(blocksPercent <= options->barWidth);
 
         bool autoColorElapsed = ffStrbufIgnCaseEqualS(&options->barColorElapsed, "auto");

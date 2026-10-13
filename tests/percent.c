@@ -41,6 +41,19 @@ int main(void) {
     FFOptionsDisplay* options = &instance.config.display;
     ffOptionInitModuleArg(&module, "");
 
+    {
+        options->pipe = true;
+        ffStrbufSetS(&options->barCharElapsed, "#");
+        ffStrbufSetS(&options->barCharTotal, "-");
+        ffStrbufSetS(&options->barBorderLeft, "[");
+        ffStrbufSetS(&options->barBorderRight, "]");
+        const FFPercentageModuleConfig config = { .green = 50, .yellow = 80 };
+        VERIFY_BAR(150, config, "[##########]");
+        VERIFY_BAR(-10, config, "[----------]");
+        ffOptionsDestroyDisplay(options);
+        ffOptionsInitDisplay(options);
+    }
+
     // Pin the threshold colors: the yellow and red defaults depend on whether the terminal is
     // detected as a light theme, which is not something a test should depend on.
     ffStrbufSetS(&options->percentColorGreen, "32");

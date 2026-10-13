@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed percentage bars overflowing or aborting for values outside 0 to 100. (Global)
 * Fixed NaN and infinity being truncated or padded as decimal fractions. (Global)
 * Fixed malformed numeric Xft sizes being displayed as valid point sizes. (TerminalFont)
 * Fixed signed overflow when parsing oversized XLFD point and pixel sizes. (TerminalFont)

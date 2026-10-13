@@ -19,6 +19,9 @@ static void verify(const char* format, const char* arg, const char* expected, in
 
 int main(void) {
     instance.config.display.pipe = true;
+    VERIFY("{?1}a{?1}b{?}c{?}visible", "", "visible");
+    VERIFY("{/1}a{/1}b{/}c{/}visible", "set", "visible");
+    VERIFY("{?1}a{{?}b{?}visible", "", "visible");
     VERIFY("{4294967297}", "abc", "{4294967297}");
     VERIFY("{1:4294967296}", "abc", "{1:4294967296}");
     VERIFY("{1:-2147483648}", "abc", "{1:-2147483648}");

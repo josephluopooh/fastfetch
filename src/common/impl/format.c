@@ -520,6 +520,40 @@ static bool skipAnsiEscape(FFstrbuf* in, FFstrbuf* out, FFstrbuf* trailingEscape
     return true;
 }
 
+static uint32_t skipConditional(const FFstrbuf* format, uint32_t start, char kind, uint32_t numArgs, const FFformatarg* arguments) {
+    uint32_t depth = 0;
+    for (uint32_t i = start + 1; i + 2 < format->length; ++i) {
+        if (format->chars[i] != '{') {
+            continue;
+        }
+        if (format->chars[i + 1] == '{') {
+            ++i;
+            continue;
+        }
+        if (format->chars[i + 1] != kind) {
+            continue;
+        }
+        uint32_t end = ffStrbufNextIndexC(format, i + 2, '}');
+        if (end == format->length) {
+            break;
+        }
+        if (end == i + 2) {
+            if (depth == 0) {
+                return end;
+            }
+            --depth;
+        } else {
+            FF_STRBUF_AUTO_DESTROY argument = ffStrbufCreateNS(end - i - 2, format->chars + i + 2);
+            uint32_t index = getArgumentIndex(argument.chars, numArgs, arguments);
+            if (index > 0 && index <= numArgs) {
+                ++depth;
+            }
+        }
+        i = end;
+    }
+    return format->length;
+}
+
 static bool parseFormatInt(const char* text, char** end, int32_t* result) {
     errno = 0;
     long long value = strtoll(text, end, 10);
@@ -627,7 +661,7 @@ static bool parseFormatString(FFstrbuf* buffer, const FFstrbuf* formatstr, uint3
             }
 
             // fastforward to the end of the if without printing the in between
-            i = ffStrbufNextIndexS(formatstr, i, "{?}") + 2; // 2 is the length of "{?}" - 1 because the loop will increment it again directly after continue
+            i = skipConditional(formatstr, i, '?', numArgs, arguments);
             continue;
         }
 
@@ -650,7 +684,7 @@ static bool parseFormatString(FFstrbuf* buffer, const FFstrbuf* formatstr, uint3
             }
 
             // fastforward to the end of the if without printing the in between
-            i = ffStrbufNextIndexS(formatstr, i, "{/}") + 2; // 2 is the length of "{/}" - 1 because the loop will increment it again directly after continue
+            i = skipConditional(formatstr, i, '/', numArgs, arguments);
             continue;
         }
 

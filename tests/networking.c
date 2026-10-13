@@ -23,6 +23,17 @@ static FFNetworkingTransferEncoding parse(const char* value) {
 }
 
 int main(void) {
+#ifdef FF_HAVE_ZLIB
+    {
+        VERIFY(ffNetworkingLoadZlibLibrary() == nullptr);
+        FF_STRBUF_AUTO_DESTROY response = ffStrbufCreateS("HTTP/1.1 200 OK\r\nContent-Encoding:\tgzip\r\n\r\ninvalid");
+        char* end = strstr(response.chars, "\r\n\r\n");
+        VERIFY(!ffNetworkingDecompressGzip(&response, end));
+        ffStrbufSetS(&response, "HTTP/1.1 200 OK\r\nContent-Encoding: gzip-other\r\n\r\nplain");
+        end = strstr(response.chars, "\r\n\r\n");
+        VERIFY(ffNetworkingDecompressGzip(&response, end));
+    }
+#endif
 #if defined(FF_HAVE_ZLIB) && !defined(_WIN32)
     {
         VERIFY(ffNetworkingLoadZlibLibrary() == nullptr);

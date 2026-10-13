@@ -70,10 +70,9 @@ bool ffNetworkingDecompressGzip(FFstrbuf* buffer, char* headerEnd) {
     // Calculate header size
     uint32_t headerSize = (uint32_t) (headerEnd - buffer->chars);
 
-    *headerEnd = '\0'; // Replace delimiter with null character for easier processing
-    // Ensure Content-Encoding is in response headers, not in response body
-    bool hasGzip = strcasestr(buffer->chars, "\nContent-Encoding: gzip") != nullptr;
-    *headerEnd = '\r'; // Restore delimiter
+    uint32_t encodingLength = 0;
+    const char* encoding = ffNetworkingFindHeader(buffer->chars, headerSize, "Content-Encoding:", &encodingLength);
+    bool hasGzip = encoding && encodingLength == 4 && strncasecmp(encoding, "gzip", 4) == 0;
 
     if (!hasGzip) {
         FF_DEBUG("No gzip compressed content detected, skipping decompression");

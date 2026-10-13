@@ -6,6 +6,7 @@
 #include "common/library.h"
 
 #include <inttypes.h>
+#include <errno.h>
 
 void ffFormatAppendFormatArg(FFstrbuf* buffer, const FFformatarg* formatarg) {
     switch (formatarg->type) {
@@ -79,14 +80,15 @@ static uint32_t getArgumentIndex(const char* placeholderValue, uint32_t numArgs,
 
     if (firstChar >= '0' && firstChar <= '9') {
         char* pEnd = nullptr;
-        uint32_t result = (uint32_t) strtoul(placeholderValue, &pEnd, 10);
-        if (result > numArgs) {
+        errno = 0;
+        unsigned long long result = strtoull(placeholderValue, &pEnd, 10);
+        if (errno == ERANGE || result > numArgs) {
             return UINT32_MAX;
         }
         if (*pEnd != '\0') {
             return UINT32_MAX;
         }
-        return result;
+        return (uint32_t) result;
     } else if (ffCharIsEnglishAlphabet(firstChar)) {
         for (uint32_t i = 0; i < numArgs; ++i) {
             const FFformatarg* arg = &arguments[i];
@@ -518,6 +520,16 @@ static bool skipAnsiEscape(FFstrbuf* in, FFstrbuf* out, FFstrbuf* trailingEscape
     return true;
 }
 
+static bool parseFormatInt(const char* text, char** end, int32_t* result) {
+    errno = 0;
+    long long value = strtoll(text, end, 10);
+    if (errno == ERANGE || value < INT32_MIN || value > INT32_MAX) {
+        return false;
+    }
+    *result = (int32_t) value;
+    return true;
+}
+
 static bool parseFormatString(FFstrbuf* buffer, const FFstrbuf* formatstr, uint32_t numArgs, const FFformatarg* arguments) {
     uint32_t argCounter = 0;
 
@@ -655,7 +667,11 @@ static bool parseFormatString(FFstrbuf* buffer, const FFstrbuf* formatstr, uint3
         // test for constant or env var, if so evaluate it
         if (firstChar == '$') {
             char* pend = nullptr;
-            int32_t indexSigned = (int32_t) strtol(placeholderValue.chars + 1, &pend, 10);
+            int32_t indexSigned;
+            if (!parseFormatInt(placeholderValue.chars + 1, &pend, &indexSigned)) {
+                appendInvalidPlaceholder(buffer, "{", &placeholderValue, i, formatstr->length);
+                continue;
+            }
             if (pend == placeholderValue.chars + 1) {
                 // treat placeholder as an environment variable
                 char* envValue = getenv(placeholderValue.chars + 1);
@@ -714,7 +730,12 @@ static bool parseFormatString(FFstrbuf* buffer, const FFstrbuf* formatstr, uint3
             skipAnsiEscape(&tempString, buffer, &trailingEscape);
 
             char* pEnd = nullptr;
-            int32_t start = (int32_t) strtol(pSep + 1, &pEnd, 10);
+            int32_t start;
+            if (!parseFormatInt(pSep + 1, &pEnd, &start)) {
+                *pSep = cSep;
+                appendInvalidPlaceholder(buffer, "{", &placeholderValue, i, formatstr->length);
+                continue;
+            }
             if (start < 0) {
                 start = (int32_t) tempString.length + start;
             }
@@ -722,7 +743,12 @@ static bool parseFormatString(FFstrbuf* buffer, const FFstrbuf* formatstr, uint3
                 if (*pEnd == '\0') {
                     ffStrbufAppendNS(buffer, tempString.length - (uint32_t) start, &tempString.chars[start]);
                 } else if (*pEnd == ',') {
-                    int32_t end = (int32_t) strtol(pEnd + 1, &pEnd, 10);
+                    int32_t end;
+                    if (!parseFormatInt(pEnd + 1, &pEnd, &end)) {
+                        *pSep = cSep;
+                        appendInvalidPlaceholder(buffer, "{", &placeholderValue, i, formatstr->length);
+                        continue;
+                    }
                     if (!*pEnd) {
                         if (end < 0) {
                             end = (int32_t) tempString.length + end;
@@ -748,8 +774,8 @@ static bool parseFormatString(FFstrbuf* buffer, const FFstrbuf* formatstr, uint3
             }
         } else {
             char* pEnd = nullptr;
-            int32_t truncLength = (int32_t) strtol(pSep + 1, &pEnd, 10);
-            if (*pEnd != '\0') {
+            int32_t truncLength;
+            if (!parseFormatInt(pSep + 1, &pEnd, &truncLength) || truncLength == INT32_MIN || *pEnd != '\0') {
                 *pSep = cSep;
                 appendInvalidPlaceholder(buffer, "{", &placeholderValue, i, formatstr->length);
                 continue;

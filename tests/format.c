@@ -19,6 +19,11 @@ static void verify(const char* format, const char* arg, const char* expected, in
 
 int main(void) {
     instance.config.display.pipe = true;
+    VERIFY("{4294967297}", "abc", "{4294967297}");
+    VERIFY("{1:4294967296}", "abc", "{1:4294967296}");
+    VERIFY("{1:-2147483648}", "abc", "{1:-2147483648}");
+    VERIFY("{1~4294967296}", "abc", "{1~4294967296}");
+    VERIFY("{1~0,4294967297}", "abc", "{1~0,4294967297}");
     VERIFY("{1:3}", "abcdef\e[m", "abc\e[m");
     VERIFY("{1>5}", "abc\e[m", "  abc\e[m");
     VERIFY("{1~0,-100}", "hello", "");
@@ -176,6 +181,7 @@ int main(void) {
         setenv("FF_TEST", "ENVVAR", 1);
         VERIFY("output({$FF_TEST})", "", "output(ENVVAR)");
         VERIFY("output({$1})", "", "output(CONST1)");
+        VERIFY("{$4294967297}", "", "{$4294967297}");
         VERIFY("output({$FF_TEST}{$1})", "", "output(ENVVARCONST1)");
         VERIFY("output({$1}{$FF_TEST})", "", "output(CONST1ENVVAR)");
         VERIFY("output({$FF_TEST}{$FF_TEST})", "", "output(ENVVARENVVAR)");

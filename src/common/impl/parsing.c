@@ -76,6 +76,11 @@ void ffParseGTK(FFstrbuf* buffer, const FFstrbuf* gtk2, const FFstrbuf* gtk3, co
             ffStrbufAppendS(buffer, " [GTK2/3], ");
             ffStrbufAppend(buffer, gtk4);
             ffStrbufAppendS(buffer, " [GTK4]");
+        } else if (ffStrbufIgnCaseEqual(gtk2, gtk4)) {
+            ffStrbufAppend(buffer, gtk4);
+            ffStrbufAppendS(buffer, " [GTK2/4], ");
+            ffStrbufAppend(buffer, gtk3);
+            ffStrbufAppendS(buffer, " [GTK3]");
         } else if (ffStrbufIgnCaseEqual(gtk3, gtk4)) {
             ffStrbufAppend(buffer, gtk2);
             ffStrbufAppendS(buffer, " [GTK2], ");

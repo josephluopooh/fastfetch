@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed duplicate GTK2 and GTK4 values when GTK3 uses a different theme or font. (Global)
 * Fixed negative character values reaching byte transformation and classification callbacks. (Global)
 * Fixed scientific notation being truncated while formatting small floating point values. (Global)
 * Fixed case conversion crashing on static strings. (Global)

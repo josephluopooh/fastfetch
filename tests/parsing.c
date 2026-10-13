@@ -83,6 +83,7 @@ static void verifyGtk(const char* gtk2, const char* gtk3, const char* gtk4, cons
 #define VERIFY_GTK(...) verifyGtk(__VA_ARGS__, __LINE__)
 
 int main(void) {
+    VERIFY_GTK("Same", "Other", "Same", "Same [GTK2/4], Other [GTK3]");
     // ffVersionCompare: the major field decides first, then minor, then patch. Equal versions
     // compare equal even when they come from different sources.
     {
@@ -159,9 +160,8 @@ int main(void) {
         VERIFY_GTK("2.0", "3.0", "3.0", "2.0 [GTK2], 3.0 [GTK3/4]");
         VERIFY_GTK("2.0", "3.0", "4.0", "2.0 [GTK2], 3.0 [GTK3], 4.0 [GTK4]");
 
-        // GTK2 and GTK4 equal while GTK3 differs is not special cased: it falls back to the plain
-        // three-way listing, so the same version is printed twice with different suffixes.
-        VERIFY_GTK("2.0", "3.0", "2.0", "2.0 [GTK2], 3.0 [GTK3], 2.0 [GTK4]");
+        // Matching GTK2 and GTK4 values share a suffix even when GTK3 differs.
+        VERIFY_GTK("2.0", "3.0", "2.0", "2.0 [GTK2/4], 3.0 [GTK3]");
 
         // The comparison is case insensitive, but the value printed is the one from the buffer that
         // the branch selected -- here the third one, not the first.

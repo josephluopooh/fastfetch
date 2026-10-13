@@ -123,7 +123,11 @@ static void fontPangoParseWord(const char** data, FFfont* font, FFstrbuf* altern
         return;
     }
 
-    if (**data == '\0' || **data == '`' || **data == '\\') {
+    const char* remaining = *data;
+    while (*remaining == ' ' || *remaining == '\t') {
+        ++remaining;
+    }
+    if (*remaining == '\0' || *remaining == '`' || *remaining == '\\') {
         ffStrbufAppendNS(&font->size, wordLength, wordStart);
         char* end;
         double size = strtod(font->size.chars, &end);

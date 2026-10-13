@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed trailing spaces causing Pango font sizes to become part of the family name. (TerminalFont)
 * Fixed Pango pixel sizes being displayed as points and partially numeric font names being parsed as sizes. (TerminalFont)
 * Fixed property parsing trimming quoted spaces and retaining unquoted trailing tabs. (Global)
 * Fixed duplicate GTK2 and GTK4 values when GTK3 uses a different theme or font. (Global)

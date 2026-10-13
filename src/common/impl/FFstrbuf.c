@@ -584,7 +584,7 @@ void ffStrbufAppendDouble(FFstrbuf* strbuf, double value, int8_t precision, bool
 
     strbuf->length += (uint32_t) (end - start);
 
-    if (__builtin_expect(value > 1e21 || value < -1e21, false)) {
+    if (__builtin_expect(strchr(start, 'e') != nullptr, false)) {
         // If the value is too large, yyjson_write_number will write it in scientific notation
         return;
     }

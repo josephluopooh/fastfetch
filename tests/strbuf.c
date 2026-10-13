@@ -27,6 +27,19 @@ const FFstrbuf testCreateStatic = FF_STRBUF_STATIC("TEST");
 
 int main(void) {
     {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreate();
+        const double values[] = { 1e-10, -1e-10, 1e21, -1e21 };
+        for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); ++i) {
+            for (int zeros = 0; zeros <= 1; ++zeros) {
+                ffStrbufClear(&strbuf);
+                ffStrbufAppendDouble(&strbuf, values[i], -1, zeros);
+                char* end;
+                VERIFY(strtod(strbuf.chars, &end) == values[i]);
+                VERIFY(*end == '\0');
+            }
+        }
+    }
+    {
         FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreateStatic("AbC");
         ffStrbufUpperCase(&strbuf);
         VERIFY(ffStrbufEqualS(&strbuf, "ABC"));

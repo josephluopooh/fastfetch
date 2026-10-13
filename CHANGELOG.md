@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed scientific notation being truncated while formatting small floating point values. (Global)
 * Fixed case conversion crashing on static strings. (Global)
 * Fixed invalid UTF-32 values producing malformed UTF-8 or incorrect byte counts. (Global)
 * Fixed empty property values retaining text from an earlier occurrence. (Global)

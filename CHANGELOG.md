@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed corruption when appending or prepending a substring of the destination buffer. (Global)
 * Fixed searchable directories being returned as executable files. (Global)
 * Fixed executable lookup skipping empty PATH entries, including a trailing colon. (Global)
 * Fixed Qt fonts configured in pixels displaying a size of -1pt. (TerminalFont)

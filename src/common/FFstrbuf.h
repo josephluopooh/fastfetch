@@ -268,9 +268,14 @@ typedef struct FFstrbuf {
     if (__builtin_expect(value == nullptr || length == 0, false)) {
         return;
     }
+    uintptr_t offset = (uintptr_t) value - (uintptr_t) strbuf->chars;
+    bool aliased = offset <= strbuf->length;
     ffStrbufEnsureFree(strbuf, length);
+    if (aliased) {
+        value = strbuf->chars + offset;
+    }
 
-    memcpy(&strbuf->chars[strbuf->length], value, length);
+    memmove(&strbuf->chars[strbuf->length], value, length);
     strbuf->length += length;
     strbuf->chars[strbuf->length] = '\0';
 }

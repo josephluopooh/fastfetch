@@ -212,9 +212,14 @@ void ffStrbufPrependNS(FFstrbuf* strbuf, uint32_t length, const char* value) {
         return;
     }
 
+    uintptr_t offset = (uintptr_t) value - (uintptr_t) strbuf->chars;
+    bool aliased = offset <= strbuf->length;
     ffStrbufEnsureFree(strbuf, length);
     memmove(strbuf->chars + length, strbuf->chars, strbuf->length + 1); // + 1 for the null byte
-    memcpy(strbuf->chars, value, length);
+    if (aliased) {
+        value = strbuf->chars + length + offset;
+    }
+    memmove(strbuf->chars, value, length);
     strbuf->length += length;
 }
 

@@ -32,6 +32,15 @@ static int checkedByte(int value) {
 
 int main(void) {
     {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreateS("abcdef");
+        ffStrbufPrependNS(&strbuf, 2, strbuf.chars + 2);
+        VERIFY(ffStrbufEqualS(&strbuf, "cdabcdef"));
+        ffStrbufAppendNS(&strbuf, strbuf.length, strbuf.chars);
+        VERIFY(ffStrbufEqualS(&strbuf, "cdabcdefcdabcdef"));
+        ffStrbufPrependNS(&strbuf, strbuf.length, strbuf.chars);
+        VERIFY(ffStrbufEqualS(&strbuf, "cdabcdefcdabcdefcdabcdefcdabcdef"));
+    }
+    {
         FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreate();
         ffStrbufAppendTransformS(&strbuf, "\xFF", checkedByte);
         VERIFY(ffStrbufEqualS(&strbuf, "\xFF"));

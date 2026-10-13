@@ -111,10 +111,10 @@ int main(void) {
         VERIFY_LINE("Name", "Name:", false, "");
     }
 
-    // Trailing spaces are trimmed, but nothing else is: a trailing tab survives.
+    // Unquoted values discard trailing horizontal whitespace.
     {
         VERIFY_LINE("Name: foo   ", "Name:", true, "foo");
-        VERIFY_LINE("Name: foo\t", "Name:", true, "foo\t");
+        VERIFY_LINE("Name: foo\t", "Name:", true, "foo");
         VERIFY_LINE("Name: foo  \n", "Name:", true, "foo");
     }
 
@@ -126,8 +126,8 @@ int main(void) {
         VERIFY_LINE("Name: \"\"", "Name:", true, "");
         VERIFY_LINE("Name: \"foo", "Name:", true, "foo"); // unterminated quote: the line end closes it
 
-        // The trim still applies, and it only removes the right hand side
-        VERIFY_LINE("Name: \"  foo  \"", "Name:", true, "  foo");
+        // Whitespace inside quotes is part of the value.
+        VERIFY_LINE("Name: \"  foo  \"", "Name:", true, "  foo  ");
     }
 
     // A key ending in `>` switches the parser to XML mode, where the value ends at `<` instead of at

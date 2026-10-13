@@ -68,7 +68,11 @@ bool ffParsePropLinePointer(const char** line, const char* start, FFstrbuf* buff
         ++(*line);
     }
 
-    ffStrbufTrimRight(buffer, ' ');
+    if (valueEnd != '"' && valueEnd != '\'') {
+        while (ffStrbufEndsWithC(buffer, ' ') || ffStrbufEndsWithC(buffer, '\t')) {
+            ffStrbufSubstrBefore(buffer, buffer->length - 1);
+        }
+    }
 
     return true;
 }

@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed Base64 decoding when line breaks occur inside encoded groups. (Global)
 * Fixed a one-byte overread and unaligned loads in Base64 encoding. (Global)
 * Fixed an infinite loop when removing an empty substring. (Global)
 * Fixed invalid UTF-8 encodings being counted as complete characters when calculating display widths. (Logo / Separator)

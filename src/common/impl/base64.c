@@ -62,51 +62,28 @@ static void init_decode_table() {
     } while (ch++ < 0xFF);
 }
 
-#define next_char(x) uint8_t x = decode_table[(uint8_t) *str++];
-
 void ffBase64DecodeRaw(uint32_t size, const char* str, uint32_t* out_size, char* output) {
-    if (*(uint64_t*) decode_table == 0) {
+    if (decode_table[0] == 0) {
         init_decode_table();
     }
 
     char* out = output;
-    while (size > 0 && (str[size - 1] == '\n' || str[size - 1] == '\r' || str[size - 1] == '=')) {
-        size--;
-    }
-
-    const char* ends = str + size - 4;
-    while (true) {
-        if (str > ends) {
+    uint32_t value = 0;
+    uint8_t bits = 0;
+    for (uint32_t i = 0; i < size; ++i) {
+        uint8_t ch = (uint8_t) str[i];
+        if (ch == '\r' || ch == '\n') {
+            continue;
+        }
+        if (ch == '=') {
             break;
         }
-        while (*str == '\n' || *str == '\r') {
-            str++;
+        value = (value << 6) | decode_table[ch];
+        bits += 6;
+        if (bits >= 8) {
+            bits -= 8;
+            *out++ = (char) (value >> bits);
         }
-
-        if (str > ends) {
-            break;
-        }
-        next_char(a);
-        next_char(b);
-        next_char(c);
-        next_char(d);
-
-        *out++ = (char) (a << 2 | b >> 4);
-        *out++ = (char) (b << 4 | c >> 2);
-        *out++ = (char) (c << 6 | d >> 0);
-    }
-
-    uint8_t mod = (uint8_t) (ends - str + 4) % 4;
-    if (mod == 2) {
-        next_char(a);
-        next_char(b);
-        *out++ = (char) (a << 2 | b >> 4);
-    } else if (mod == 3) {
-        next_char(a);
-        next_char(b);
-        next_char(c);
-        *out++ = (char) (a << 2 | b >> 4);
-        *out++ = (char) (b << 4 | c >> 2);
     }
 
     *out = '\0';

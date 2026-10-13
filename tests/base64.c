@@ -158,6 +158,16 @@ int main(void) {
 
     verifyRoundTrip();
 
+    const char* wrapped[] = { "Z\nm9v", "Zm\r\n9v", "Zm9\nv", "Zm9v\nY\nmFy", "\nZg==\r\n" };
+    const char* expected[] = { "foo", "foo", "foo", "foobar", "f" };
+    for (size_t i = 0; i < sizeof(wrapped) / sizeof(wrapped[0]); ++i) {
+        char decoded[16];
+        uint32_t length;
+        ffBase64DecodeRaw((uint32_t) strlen(wrapped[i]), wrapped[i], &length, decoded);
+        VERIFY(length == strlen(expected[i]));
+        VERIFY(strcmp(decoded, expected[i]) == 0);
+    }
+
     puts("\033[32mAll tests passed!" FASTFETCH_TEXT_MODIFIER_RESET);
     return 0;
 }

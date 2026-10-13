@@ -7,6 +7,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <limits.h>
 
 void ffFontInit(FFfont* font) {
     // Ensure no memory allocates
@@ -249,7 +250,7 @@ void ffFontInitXlfd(FFfont* font, const char* xlfd) {
                 bool ok = true;
                 for (uint32_t i = 0; i < length; i++) {
                     char c = pstart[i];
-                    if (c < '0' || c > '9') {
+                    if (c < '0' || c > '9' || deciPt > (LONG_MAX - (c - '0')) / 10) {
                         ok = false;
                         break;
                     }
@@ -275,7 +276,7 @@ void ffFontInitXlfd(FFfont* font, const char* xlfd) {
                     bool ok = true;
                     for (uint32_t i = 0; i < length; i++) {
                         char c = pstart[i];
-                        if (c < '0' || c > '9') {
+                        if (c < '0' || c > '9' || px > (LONG_MAX - (c - '0')) / 10) {
                             ok = false;
                             break;
                         }

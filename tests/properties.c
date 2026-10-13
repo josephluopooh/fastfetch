@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _WIN32
+    #include <unistd.h>
+#endif
 
 static void verify(bool expression, const char* expressionStr, int lineNo) {
     if (expression) {
@@ -45,6 +48,23 @@ static void verifyLines(const char* lines, const char* start, bool expectedResul
 #define VERIFY_LINES(...) verifyLines(__VA_ARGS__, __LINE__)
 
 int main(void) {
+    #ifndef _WIN32
+    {
+        char path[] = "/tmp/fastfetch-properties-XXXXXX";
+        int fd = mkstemp(path);
+        VERIFY(fd >= 0);
+        FILE* file = fdopen(fd, "w");
+        VERIFY(file != nullptr);
+        fputs("Name: previous\nName:\nOther: value\n", file);
+        fclose(file);
+        FF_STRBUF_AUTO_DESTROY buffer = ffStrbufCreate();
+        bool found = ffParsePropFile(path, "Name:", &buffer);
+        unlink(path);
+        VERIFY(found);
+        VERIFY(buffer.length == 0);
+        VERIFY(buffer.chars[0] == '\0');
+    }
+    #endif
     // An empty prefix extracts the whole value, without reading before the line.
     {
         char* line = malloc(4);

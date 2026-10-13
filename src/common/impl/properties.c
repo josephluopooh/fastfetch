@@ -129,6 +129,8 @@ bool ffParsePropFileValues(const char* filename, uint32_t numQueries, FFpropquer
                 queries[i].buffer->length = 0;
                 if (!ffParsePropLine(line, queries[i].start, queries[i].buffer)) {
                     queries[i].buffer->length = currentLength;
+                } else if (queries[i].buffer->length == 0) {
+                    ffStrbufClear(queries[i].buffer);
                 }
             }
         }

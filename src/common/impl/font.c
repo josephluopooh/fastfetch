@@ -365,10 +365,12 @@ void ffFontInitXft(FFfont* font, const char* xft) {
     if (dashPos) {
         bool ok = true;
         bool seenDigit = false;
+        bool seenPoint = false;
         for (const char* q = sizeStart; q < headEnd; ++q) {
             if (ffCharIsDigit(*q)) {
                 seenDigit = true;
-            } else if (*q == '.') {
+            } else if (*q == '.' && !seenPoint) {
+                seenPoint = true;
                 continue;
             } else {
                 ok = false;
@@ -447,7 +449,9 @@ void ffFontInitXft(FFfont* font, const char* xft) {
             if (
                 (keyLen == 4 && ffStrStartsWithIgnCase(keyStart, "size")) ||
                 (keyLen == 9 && (ffStrStartsWithIgnCase(keyStart, "pixelsize") || ffStrStartsWithIgnCase(keyStart, "pointsize")))) {
-                if (sizeEmpty && ffCharIsDigit(value.chars[0])) {
+                char* end;
+                double size = strtod(value.chars, &end);
+                if (sizeEmpty && end != value.chars && *end == '\0' && isfinite(size) && size >= 0) {
                     ffStrbufAppend(&font->size, &value);
                     ffStrbufAppendS(&font->size,
                         (keyLen == 9 && ffStrStartsWithIgnCase(keyStart, "pixelsize")) ? "px" : "pt");

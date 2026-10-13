@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed malformed numeric Xft sizes being displayed as valid point sizes. (TerminalFont)
 * Fixed signed overflow when parsing oversized XLFD point and pixel sizes. (TerminalFont)
 * Fixed empty style entries in Qt fonts with repeated or trailing spaces. (TerminalFont)
 * Fixed large duration values wrapping the day count to zero. (Global)

@@ -15,6 +15,16 @@ static void verify(bool value, int line) {
 int main(void) {
     {
         FFfont font;
+        ffFontInitXft(&font, "Sans-1.2.3");
+        VERIFY(font.size.length == 0);
+        VERIFY(ffStrbufEqualS(&font.name, "Sans-1.2.3"));
+        ffFontDestroy(&font);
+        ffFontInitXft(&font, "Sans:size=12oops");
+        VERIFY(font.size.length == 0);
+        ffFontDestroy(&font);
+    }
+    {
+        FFfont font;
         ffFontInitXlfd(&font, "-misc-fixed-medium-r-normal--14-18446744073709551716-75-75-c-70-iso10646-1");
         VERIFY(ffStrbufEqualS(&font.size, "14px"));
         ffFontDestroy(&font);

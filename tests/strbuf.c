@@ -27,6 +27,19 @@ const FFstrbuf testCreateStatic = FF_STRBUF_STATIC("TEST");
 
 int main(void) {
     {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreate();
+        const uint32_t invalid[] = { 0xD800, 0xDFFF, 0x110000, UINT32_MAX };
+        for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
+            ffStrbufClear(&strbuf);
+            VERIFY(ffStrbufAppendUtf32CodePoint(&strbuf, invalid[i]) == 3);
+            VERIFY(ffStrbufEqualS(&strbuf, "\xEF\xBF\xBD"));
+        }
+        ffStrbufClear(&strbuf);
+        VERIFY(ffStrbufAppendUtf32CodePoint(&strbuf, 0xD7FF) == 3);
+        VERIFY(ffStrbufAppendUtf32CodePoint(&strbuf, 0xE000) == 3);
+        VERIFY(ffStrbufAppendUtf32CodePoint(&strbuf, 0x10FFFF) == 4);
+    }
+    {
         FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreateS("abc");
         ffStrbufRemoveS(&strbuf, "");
         VERIFY(ffStrbufEqualS(&strbuf, "abc"));

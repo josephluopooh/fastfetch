@@ -764,6 +764,9 @@ bool ffStrbufMatchSeparatedIgnCaseNS(const FFstrbuf* strbuf, uint32_t compLength
 }
 
 int ffStrbufAppendUtf32CodePoint(FFstrbuf* strbuf, uint32_t codepoint) {
+    if ((codepoint >= 0xD800 && codepoint <= 0xDFFF) || codepoint > 0x10FFFF) {
+        codepoint = 0xFFFD;
+    }
     if (codepoint <= 0x7F) {
         ffStrbufAppendC(strbuf, (char) codepoint);
         return 1;

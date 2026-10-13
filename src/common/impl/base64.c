@@ -1,5 +1,4 @@
 #include "common/base64.h"
-#include "common/endian.h"
 
 // https://github.com/kostya/benchmarks/blob/master/base64/test-nolib.c#L145
 void ffBase64EncodeRaw(uint32_t size, const char* str, uint32_t* out_size, char* output) {
@@ -7,9 +6,9 @@ void ffBase64EncodeRaw(uint32_t size, const char* str, uint32_t* out_size, char*
     char* out = output;
     const char* ends = str + (size - size % 3);
     while (str != ends) {
-        uint32_t n = *(uint32_t*) str;
-        // The 3 input bytes must be laid out big-endian (str[0] in the most significant position).
-        n = FF_READ_BE(n);
+        uint32_t n = (uint32_t) (uint8_t) str[0] << 24 |
+                     (uint32_t) (uint8_t) str[1] << 16 |
+                     (uint32_t) (uint8_t) str[2] << 8;
         *out++ = chars[(n >> 26) & 63];
         *out++ = chars[(n >> 20) & 63];
         *out++ = chars[(n >> 14) & 63];
@@ -19,8 +18,7 @@ void ffBase64EncodeRaw(uint32_t size, const char* str, uint32_t* out_size, char*
 
     // The bytes have to be widened through `uint8_t`: `char` is signed here, so widening a byte
     // with the high bit set would sign extend it and the `& 63` below would then read the extension
-    // instead of the byte's own bits. The whole groups above are immune because they read through a
-    // `uint32_t` instead.
+    // instead of the byte's own bits. Whole groups above also widen unsigned bytes.
     if (size % 3 == 1) {
         uint64_t n = (uint64_t) (uint8_t) *str << 16;
         *out++ = chars[(n >> 18) & 63];

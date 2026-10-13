@@ -142,6 +142,16 @@ static void verifyRoundTrip(void) {
 }
 
 int main(void) {
+    // A complete group need not have a fourth byte or a NUL terminator.
+    {
+        char* source = malloc(3);
+        memcpy(source, "foo", 3);
+        char encoded[5];
+        uint32_t length;
+        ffBase64EncodeRaw(3, source, &length, encoded);
+        VERIFY(length == 4 && strcmp(encoded, "Zm9v") == 0);
+        free(source);
+    }
     for (size_t i = 0; i < sizeof(ENCODING_CASES) / sizeof(ENCODING_CASES[0]); ++i) {
         verifyEncodingCase(&ENCODING_CASES[i], __LINE__);
     }

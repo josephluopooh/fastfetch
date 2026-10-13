@@ -54,6 +54,17 @@ uint8_t ffUtf8CharLenWidth(const char* str, uint32_t length, uint8_t* width) {
         ucs |= (uint32_t) ((unsigned char) str[i] & 0x3F);
     }
 
+    // Reject overlong encodings, UTF-16 surrogates, and values outside Unicode.
+    if ((bytes == 2 && ucs < 0x80) ||
+        (bytes == 3 && ucs < 0x800) ||
+        (bytes == 4 && ucs < 0x10000) ||
+        (ucs >= 0xD800 && ucs <= 0xDFFF) || ucs > 0x10FFFF) {
+        if (width) {
+            *width = 1;
+        }
+        return 1;
+    }
+
     int wcWidth = mk_wcwidth(ucs);
     if (width) {
         *width = (uint8_t) (wcWidth < 0 ? 0 : wcWidth);

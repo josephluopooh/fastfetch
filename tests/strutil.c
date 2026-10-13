@@ -179,6 +179,48 @@ int main(void) {
         VERIFY(ffStrEquals(FF_STR(123), "123"));
     }
 
+    // Invalid scalar values must use the same one-byte fallback as malformed byte sequences.
+    {
+        const char* invalid[] = {
+            "\xC0\xAF",             // overlong two-byte encoding
+            "\xC1\xBF",
+            "\xE0\x80\xAF",         // overlong three-byte encoding
+            "\xE0\x9F\xBF",
+            "\xF0\x80\x80\xAF",     // overlong four-byte encoding
+            "\xF0\x8F\xBF\xBF",
+            "\xED\xA0\x80",         // U+D800, first surrogate
+            "\xED\xBF\xBF",         // U+DFFF, last surrogate
+            "\xF4\x90\x80\x80",     // U+110000, above the Unicode limit
+            "\xF7\xBF\xBF\xBF",
+        };
+        for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
+            uint32_t length = (uint32_t) strlen(invalid[i]);
+            uint8_t width = 0;
+            VERIFY(ffUtf8CharLenWidth(invalid[i], length, &width) == 1);
+            VERIFY(width == 1);
+            VERIFY(ffUtf8CharLenWidth(invalid[i], length, nullptr) == 1);
+            VERIFY(ffUtf8StrWidth(invalid[i], length) == length);
+        }
+    }
+
+    // Valid encodings immediately beside those limits still consume the complete character.
+    {
+        const char* valid[] = {
+            "\xC2\x80",             // U+0080
+            "\xDF\xBF",             // U+07FF
+            "\xE0\xA0\x80",         // U+0800
+            "\xED\x9F\xBF",         // U+D7FF
+            "\xEE\x80\x80",         // U+E000
+            "\xEF\xBF\xBF",         // U+FFFF
+            "\xF0\x90\x80\x80",     // U+10000
+            "\xF4\x8F\xBF\xBF",     // U+10FFFF
+        };
+        for (size_t i = 0; i < sizeof(valid) / sizeof(valid[0]); ++i) {
+            uint32_t length = (uint32_t) strlen(valid[i]);
+            VERIFY(ffUtf8CharLenWidth(valid[i], length, nullptr) == length);
+        }
+    }
+
     #if FF_ENABLE_WCWIDTH
     {
         uint8_t width = 255;

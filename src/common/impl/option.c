@@ -4,6 +4,7 @@
 #include "common/strutil.h"
 
 #include <limits.h>
+#include <errno.h>
 
 // Return start position of the inner key if the argument key belongs to the module specified, nullptr otherwise
 const char* ffOptionTestPrefix(const char* argumentKey, const char* moduleName) {
@@ -49,8 +50,9 @@ uint32_t ffOptionParseUInt32(const char* argumentKey, const char* value) {
     }
 
     char* end;
+    errno = 0;
     unsigned long num = strtoul(value, &end, 10);
-    if (value[0] == '-' || *end != '\0' || num > UINT32_MAX) {
+    if (errno == ERANGE || end == value || value[0] == '-' || *end != '\0' || num > UINT32_MAX) {
         fprintf(stderr, "Error: usage: %s <num>\n", argumentKey);
         exit(479);
     }
@@ -65,8 +67,9 @@ int32_t ffOptionParseInt32(const char* argumentKey, const char* value) {
     }
 
     char* end;
+    errno = 0;
     long num = strtol(value, &end, 10);
-    if (*end != '\0' || num < INT32_MIN || num > INT32_MAX) {
+    if (errno == ERANGE || end == value || *end != '\0' || num < INT32_MIN || num > INT32_MAX) {
         fprintf(stderr, "Error: usage: %s <num>\n", argumentKey);
         exit(479);
     }

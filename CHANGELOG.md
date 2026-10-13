@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed empty numeric command line values being silently accepted as zero. (Global)
 * Fixed skipped nested conditional blocks leaking their trailing text into formatted output. (Global)
 * Fixed family names such as BlackChancery being mistaken for Pango styles. (TerminalFont)
 * Fixed gzip detection rejecting tab-separated headers and accepting unrelated encoding names. (Networking)

@@ -2388,6 +2388,10 @@ if (BUILD_TESTS)
     target_link_libraries(fastfetch-test-path PRIVATE libfastfetch)
     add_test(NAME test-path COMMAND fastfetch-test-path)
 
+    add_executable(fastfetch-test-options tests/options.c)
+    target_link_libraries(fastfetch-test-options PRIVATE libfastfetch)
+    add_test(NAME test-options COMMAND fastfetch-test-options)
+
     add_test(NAME test-cache COMMAND fastfetch-test-cache)
     add_test(NAME test-logo COMMAND fastfetch-test-logo)
     add_test(NAME test-strbuf COMMAND fastfetch-test-strbuf)

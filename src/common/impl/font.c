@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 void ffFontInit(FFfont* font) {
     // Ensure no memory allocates
@@ -124,12 +125,10 @@ static void fontPangoParseWord(const char** data, FFfont* font, FFstrbuf* altern
 
     if (**data == '\0' || **data == '`' || **data == '\\') {
         ffStrbufAppendNS(&font->size, wordLength, wordStart);
-        if (ffStrbufEndsWithS(&font->size, "px")) {
-            ffStrbufSubstrBefore(&font->size, font->size.length - 2);
-        }
-
-        double dummy;
-        if (sscanf(font->size.chars, "%lf", &dummy) == 1) {
+        char* end;
+        double size = strtod(font->size.chars, &end);
+        if (end != font->size.chars && isfinite(size) && size >= 0 &&
+            (*end == '\0' || strcmp(end, "px") == 0)) {
             return;
         }
 

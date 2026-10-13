@@ -125,6 +125,29 @@ exit:
     fontInitPretty(font);
 }
 
+static bool fontPangoIsStyle(const char* word, uint32_t length) {
+    FF_STRBUF_AUTO_DESTROY normalized = ffStrbufCreate();
+    strbufAppendNSExcludingC(&normalized, length, word, '-');
+    const char* name = normalized.chars;
+    const char* prefixes[] = { "Ultra", "Extra", "Semi", "Demi" };
+    for (size_t i = 0; i < sizeof(prefixes) / sizeof(prefixes[0]); ++i) {
+        if (ffStrStartsWithIgnCase(name, prefixes[i])) {
+            name += strlen(prefixes[i]);
+            if (!*name) {
+                return true;
+            }
+            break;
+        }
+    }
+    const char* styles[] = { "Normal", "Roman", "Oblique", "Italic", "Thin", "Light", "Bold", "Black", "Condensed", "Expanded" };
+    for (size_t i = 0; i < sizeof(styles) / sizeof(styles[0]); ++i) {
+        if (ffStrEqualsIgnCase(name, styles[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void fontPangoParseWord(const char** data, FFfont* font, FFstrbuf* alternativeBuffer) {
     while (**data == ' ' || **data == '\t' || **data == ',') {
         ++(*data);
@@ -157,21 +180,7 @@ static void fontPangoParseWord(const char** data, FFfont* font, FFstrbuf* altern
         ffStrbufClear(&font->size);
     }
 
-    if (
-        ffStrStartsWithIgnCase(wordStart, "Ultra") ||
-        ffStrStartsWithIgnCase(wordStart, "Extra") ||
-        ffStrStartsWithIgnCase(wordStart, "Semi") ||
-        ffStrStartsWithIgnCase(wordStart, "Demi") ||
-        ffStrStartsWithIgnCase(wordStart, "Normal") ||
-        ffStrStartsWithIgnCase(wordStart, "Roman") ||
-        ffStrStartsWithIgnCase(wordStart, "Oblique") ||
-        ffStrStartsWithIgnCase(wordStart, "Italic") ||
-        ffStrStartsWithIgnCase(wordStart, "Thin") ||
-        ffStrStartsWithIgnCase(wordStart, "Light") ||
-        ffStrStartsWithIgnCase(wordStart, "Bold") ||
-        ffStrStartsWithIgnCase(wordStart, "Black") ||
-        ffStrStartsWithIgnCase(wordStart, "Condensed") ||
-        ffStrStartsWithIgnCase(wordStart, "Expanded")) {
+    if (fontPangoIsStyle(wordStart, wordLength)) {
         if (alternativeBuffer == nullptr) {
             alternativeBuffer = FF_LIST_ADD(FFstrbuf, font->styles);
             ffStrbufInit(alternativeBuffer);

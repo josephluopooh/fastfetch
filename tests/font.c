@@ -15,6 +15,15 @@ static void verify(bool value, int line) {
 int main(void) {
     {
         FFfont font;
+        ffFontInitPango(&font, "BlackChancery 12");
+        VERIFY(ffStrbufEqualS(&font.pretty, "BlackChancery (12pt)"));
+        ffFontDestroy(&font);
+        ffFontInitPango(&font, "Sans Semi-Bold 12");
+        VERIFY(ffStrbufEqualS(&font.pretty, "Sans (12pt, SemiBold)"));
+        ffFontDestroy(&font);
+    }
+    {
+        FFfont font;
         ffFontInitXft(&font, "Sans-1.2.3");
         VERIFY(font.size.length == 0);
         VERIFY(ffStrbufEqualS(&font.name, "Sans-1.2.3"));

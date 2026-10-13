@@ -49,6 +49,8 @@ int main(void) {
     {
         VERIFY_LINE("Name: foo", "Name:", true, "foo");
         VERIFY_LINE("Name: foo\n", "Name:", true, "foo");
+        VERIFY_LINE("Name: foo\r\n", "Name:", true, "foo");
+        VERIFY_LINE("Name: foo  \r\n", "Name:", true, "foo");
         VERIFY_LINE("Name: foo\nBar: baz", "Name:", true, "foo"); // stops at the newline
         VERIFY_LINE("Name:foo", "Name:", true, "foo");
         VERIFY_LINE("Name: ", "Name:", true, ""); // found, but the value is empty

@@ -25,7 +25,18 @@ int shouldNotBeCalled(int c) {
 
 const FFstrbuf testCreateStatic = FF_STRBUF_STATIC("TEST");
 
+static int checkedByte(int value) {
+    if (value < 0 || value > 255) { exit(1); }
+    return value;
+}
+
 int main(void) {
+    {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreate();
+        ffStrbufAppendTransformS(&strbuf, "\xFF", checkedByte);
+        VERIFY(ffStrbufEqualS(&strbuf, "\xFF"));
+        VERIFY(ffStrbufEndsWithFn(&strbuf, checkedByte));
+    }
     {
         FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreate();
         const double values[] = { 1e-10, -1e-10, 1e21, -1e21 };

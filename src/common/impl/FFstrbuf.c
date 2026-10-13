@@ -147,7 +147,7 @@ void ffStrbufAppendTransformS(FFstrbuf* strbuf, const char* value, int (*transfo
 
     ffStrbufEnsureFree(strbuf, length);
     for (uint32_t i = 0; value[i] != '\0'; i++) {
-        strbuf->chars[strbuf->length++] = (char) transformFunc(value[i]);
+        strbuf->chars[strbuf->length++] = (char) transformFunc((unsigned char) value[i]);
     }
     strbuf->chars[strbuf->length] = '\0';
 }
@@ -323,7 +323,7 @@ void ffStrbufTrimLeftSpace(FFstrbuf* strbuf) {
     }
 
     uint32_t index = 0;
-    while (index < strbuf->length && isspace(strbuf->chars[index])) {
+    while (index < strbuf->length && isspace((unsigned char) strbuf->chars[index])) {
         ++index;
     }
 

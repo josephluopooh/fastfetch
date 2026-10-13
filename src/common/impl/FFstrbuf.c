@@ -611,14 +611,22 @@ void ffStrbufAppendDouble(FFstrbuf* strbuf, double value, int8_t precision, bool
 }
 
 void ffStrbufUpperCase(FFstrbuf* strbuf) {
+    if (strbuf->length == 0) {
+        return;
+    }
+    ffStrbufEnsureFree(strbuf, 0);
     for (uint32_t i = 0; i < strbuf->length; ++i) {
-        strbuf->chars[i] = (char) toupper(strbuf->chars[i]);
+        strbuf->chars[i] = (char) toupper((unsigned char) strbuf->chars[i]);
     }
 }
 
 void ffStrbufLowerCase(FFstrbuf* strbuf) {
+    if (strbuf->length == 0) {
+        return;
+    }
+    ffStrbufEnsureFree(strbuf, 0);
     for (uint32_t i = 0; i < strbuf->length; ++i) {
-        strbuf->chars[i] = (char) tolower(strbuf->chars[i]);
+        strbuf->chars[i] = (char) tolower((unsigned char) strbuf->chars[i]);
     }
 }
 

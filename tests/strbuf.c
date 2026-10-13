@@ -27,6 +27,16 @@ const FFstrbuf testCreateStatic = FF_STRBUF_STATIC("TEST");
 
 int main(void) {
     {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreateStatic("AbC");
+        ffStrbufUpperCase(&strbuf);
+        VERIFY(ffStrbufEqualS(&strbuf, "ABC"));
+    }
+    {
+        FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreateStatic("AbC");
+        ffStrbufLowerCase(&strbuf);
+        VERIFY(ffStrbufEqualS(&strbuf, "abc"));
+    }
+    {
         FF_STRBUF_AUTO_DESTROY strbuf = ffStrbufCreate();
         const uint32_t invalid[] = { 0xD800, 0xDFFF, 0x110000, UINT32_MAX };
         for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {

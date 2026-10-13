@@ -45,6 +45,13 @@ static void verifyLines(const char* lines, const char* start, bool expectedResul
 #define VERIFY_LINES(...) verifyLines(__VA_ARGS__, __LINE__)
 
 int main(void) {
+    // An empty prefix extracts the whole value, without reading before the line.
+    {
+        char* line = malloc(4);
+        memcpy(line, "foo", 4);
+        VERIFY_LINE(line, "", true, "foo");
+        free(line);
+    }
     // The plain case: `key: value`, with the value running to the end of the line.
     {
         VERIFY_LINE("Name: foo", "Name:", true, "foo");

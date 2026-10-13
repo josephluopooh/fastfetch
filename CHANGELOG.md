@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed an out-of-bounds read when parsing properties with an empty prefix. (Global)
 * Fixed carriage returns leaking into values parsed from CRLF property files. (Global)
 * Fixed Base64 decoding when line breaks occur inside encoded groups. (Global)
 * Fixed a one-byte overread and unaligned loads in Base64 encoding. (Global)

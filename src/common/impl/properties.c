@@ -13,6 +13,7 @@ bool ffParsePropLinePointer(const char** line, const char* start, FFstrbuf* buff
     if (**line == '\0') {
         return false;
     }
+    const char* lineBegin = *line;
 
     // Skip any amount of whitespace at the begin of line
     while (**line == ' ' || **line == '\t') {
@@ -46,7 +47,7 @@ bool ffParsePropLinePointer(const char** line, const char* start, FFstrbuf* buff
     char valueEnd = '\n';
 
     // Allow faster parsing of XML
-    if (*(*line - 1) == '>') {
+    if (*line > lineBegin && *(*line - 1) == '>') {
         valueEnd = '<';
     }
 

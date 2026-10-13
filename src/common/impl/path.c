@@ -45,7 +45,8 @@ const char* ffFindExecutableInPath(const char* name, FFstrbuf* result) {
             continue;
         }
     #else
-        if (access(result->chars, X_OK) != 0) {
+        struct stat info;
+        if (access(result->chars, X_OK) != 0 || stat(result->chars, &info) != 0 || !S_ISREG(info.st_mode)) {
             continue;
         }
     #endif

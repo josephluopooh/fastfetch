@@ -20,6 +20,18 @@ static void verify(bool value, int line) {
 int main(void) {
     #ifndef _WIN32
     {
+        char directory[] = "/tmp/fastfetch-exec-XXXXXX";
+        VERIFY(mkdtemp(directory) != nullptr);
+        FF_STRBUF_AUTO_DESTROY result = ffStrbufCreate();
+        VERIFY(setenv("PATH", "/tmp", 1) == 0);
+        const char* error = ffFindExecutableInPath(directory + 5, &result);
+        rmdir(directory);
+        VERIFY(error != nullptr);
+        VERIFY(result.length == 0);
+    }
+    #endif
+    #ifndef _WIN32
+    {
         char directory[] = "/tmp/fastfetch-path-XXXXXX";
         VERIFY(mkdtemp(directory) != nullptr);
         char* previous = getcwd(nullptr, 0);

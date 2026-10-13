@@ -9,6 +9,7 @@ Features:
 * Added battery temperature, remaining time detection and the charger type (AC / USB / wireless) on Android. (Battery, Android)
 
 Bugfixes:
+* Fixed searchable directories being returned as executable files. (Global)
 * Fixed executable lookup skipping empty PATH entries, including a trailing colon. (Global)
 * Fixed Qt fonts configured in pixels displaying a size of -1pt. (TerminalFont)
 * Fixed trailing spaces causing Pango font sizes to become part of the family name. (TerminalFont)

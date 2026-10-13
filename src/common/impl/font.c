@@ -105,6 +105,12 @@ void ffFontInitQt(FFfont* font, const char* data) {
     data++;
     if (isalpha(*data)) {
         do {
+            while (*data == ' ') {
+                ++data;
+            }
+            if (!*data) {
+                break;
+            }
             FFstrbuf* style = FF_LIST_ADD(FFstrbuf, font->styles);
             ffStrbufInit(style);
             data = ffStrbufAppendSUntilC(style, data, ' ');

@@ -15,6 +15,12 @@ static void verify(bool value, int line) {
 int main(void) {
     {
         FFfont font;
+        ffFontInitQt(&font, "Sans,12,-1,5,50,0,0,0,0,0,Bold  Italic ");
+        VERIFY(ffStrbufEqualS(&font.pretty, "Sans (12pt, Bold, Italic)"));
+        ffFontDestroy(&font);
+    }
+    {
+        FFfont font;
         ffFontInitQt(&font, "Monospace,-1,14,5,50,0,0,0,0,0,Regular");
         VERIFY(ffStrbufEqualS(&font.pretty, "Monospace (14px, Regular)"));
         ffFontDestroy(&font);

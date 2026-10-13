@@ -22,6 +22,18 @@ static bool rejectsNumber(bool signedValue, const char* value) {
 }
 #endif
 int main(void) {
+    {
+        const char* invalid[] = { "{\"bar\":{\"width\":256}}", "{\"bar\":{\"width\":-1}}", "{\"bar\":{\"width\":\"10\"}}" };
+        for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
+            FF_STRBUF_AUTO_DESTROY json = ffStrbufCreateF("{\"display\":%s}", invalid[i]);
+            yyjson_doc* doc = yyjson_read(json.chars, json.length, 0);
+            VERIFY(doc != nullptr);
+            FFOptionsDisplay options = {};
+            yyjson_val* key = nullptr;
+            VERIFY(ffOptionsParseDisplayJsonConfig(&options, yyjson_doc_get_root(doc), &key) != nullptr);
+            yyjson_doc_free(doc);
+        }
+    }
 #ifndef _WIN32
     VERIFY(rejectsNumber(false, ""));
     VERIFY(rejectsNumber(true, ""));

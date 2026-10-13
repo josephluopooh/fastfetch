@@ -508,6 +508,9 @@ const char* ffOptionsParseDisplayJsonConfig(FFOptionsDisplay* options, yyjson_va
 
                 yyjson_val* width = yyjson_obj_get(val, "width");
                 if (width) {
+                    if (!yyjson_is_uint(width) || yyjson_get_uint(width) > UINT8_MAX) {
+                        return "display.bar.width must be an integer between 0 and 255";
+                    }
                     options->barWidth = (uint8_t) yyjson_get_uint(width);
                 }
             } else {
